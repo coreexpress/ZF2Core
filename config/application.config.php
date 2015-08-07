@@ -1,12 +1,14 @@
 <?php
 $modules = array(
         # -- MODULE APPS --
-        'Application'
+       
         #,'CoreInstall'              // Installer example
         #,'CoreShop'                 // simple shop module
         #,'CoreChat'                 // simple Chat module
     
         # -- CORE MODULE BASE --
+    
+        'CoreInfo'
         #'CoreBase'                  // common plugins, helpers, librarys, functions and stdlib 
                                      // service factorys for navigation, breadcrumbs, etc..
                                      // settings for others modules
@@ -37,7 +39,6 @@ $addModulePaths = array(
 $addVendor = array(
     'Core'    => __DIR__ . '/../vendor/Core',
 );
-
 
 foreach ($addModulePaths as $moduleDir) {
     

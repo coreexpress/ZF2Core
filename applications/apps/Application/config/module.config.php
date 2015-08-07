@@ -8,6 +8,12 @@
  */
 
 return array(
+    'controllers' => array(
+        'invokables' => array(
+              'Application\Controller\Index' => 'Application\Controller\IndexController'
+            , 'Application\Controller\Info'  => 'Application\Controller\InfoController'
+        ),
+    ),
     'router' => array(
         'routes' => array(
             'home' => array(
@@ -69,11 +75,6 @@ return array(
                 'base_dir' => __DIR__ . '/../language',
                 'pattern'  => '%s.mo',
             ),
-        ),
-    ),
-    'controllers' => array(
-        'invokables' => array(
-            'Application\Controller\Index' => 'Application\Controller\IndexController'
         ),
     ),
     'view_manager' => array(
