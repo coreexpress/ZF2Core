@@ -3,8 +3,9 @@
 define('DS'              , DIRECTORY_SEPARATOR);
 define('PATH_APPLICATION', getcwd());
 define('PATH_PUBLIC'     , PATH_APPLICATION.DS.basename($_SERVER['DOCUMENT_ROOT']));
-define('PATH_MEDIA'      , PATH_PUBLIC.DS."media");
+define('PATH_MEDIA'      , PATH_PUBLIC.DS.'media');
 define('PATH_TEMPLATE'   , PATH_APPLICATION.DS.'templates');
+define('PATH_DATA'       , PATH_APPLICATION.DS.'data');
 
 // Composer autoloading
 if (file_exists('vendor/autoload.php')) {
@@ -26,17 +27,28 @@ if (is_dir('vendor/ZF2/library')) {
 }
 
 if ($zf2Path) {
+    
+    // Get application stack configuration
+    $configuration = include_once 'config/application.config.php';
+
     if (isset($loader)) {
         $loader->add('Zend', $zf2Path);
         $loader->add('ZendXml', $zf2Path);
+        
+        foreach ($configuration['autoloader']['namespaces'] as $name => $path) {
+            $loader->add($name, dirname($path));
+        }
+        
+        $loader->register();
     } else {
+        
         include $zf2Path . '/Zend/Loader/AutoloaderFactory.php';
+        
         Zend\Loader\AutoloaderFactory::factory(array(
-            'Zend\Loader\StandardAutoloader' => array(
-                'autoregister_zf' => true
-            )
+            'Zend\Loader\StandardAutoloader' => $configuration['autoloader']
         ));
     }
+    
 }
 
 if (!class_exists('Zend\Loader\AutoloaderFactory')) {

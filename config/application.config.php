@@ -1,32 +1,82 @@
 <?php
-/**
- * If you need an environment-specific system or application configuration,
- * there is an example in the documentation
- * @see http://framework.zend.com/manual/current/en/tutorials/config.advanced.html#environment-specific-system-configuration
- * @see http://framework.zend.com/manual/current/en/tutorials/config.advanced.html#environment-specific-application-configuration
- */
+$modules = array(
+        # -- MODULE APPS --
+        'Application'
+        #,'CoreInstall'              // Installer example
+        #,'CoreShop'                 // simple shop module
+        #,'CoreChat'                 // simple Chat module
+    
+        # -- CORE MODULE BASE --
+        #'CoreBase'                  // common plugins, helpers, librarys, functions and stdlib 
+                                     // service factorys for navigation, breadcrumbs, etc..
+                                     // settings for others modules
+        #,'CoreLogger'               // app versus users interactive logging
+        #,'CoreTheme'                // layouts, themes, skins, fonts, vendors
+        #,'CoreLanguage'             // language translation        
+        #,'CoreConfigs'              // Config manager params
+        #,'CoreConnector'            // resources for api connect restfull
+        #,'CoreUserAuth'             // Auth for user (login)
+        #,'CoreUsersAcl'             // Acl for manager resources versus access
+        #,'CoreUsers'                // Users manager
+        #,'CoreUploads'              // simple upload file
+        #,'CoreSearch'               // simple document search 
+        
+        #'CoreNavigation',           // create dinamically menu
+        #'CoreUploadsImages',        // simple upload file with resize images
+        #'CoreFileManager',          // simple file manager
+        #'CoreModuleGenerator',      // generate basic modules
+        #'CoreAppGenerator',         // generate simple structure for front or back apps 
+);
+
+$addModulePaths = array(
+      './module'
+    , './vendor'    
+    , './applications/apps' # auto load modules
+);
+
+$addVendor = array(
+    'Core'    => __DIR__ . '/../vendor/Core',
+);
+
+
+foreach ($addModulePaths as $moduleDir) {
+    
+    // ignore o core do zend se encarrega de carrega-los
+    if( ($moduleDir == './module') or  ($moduleDir == './vendor') ){
+        continue;
+    }
+    
+    $modulePath = PATH_APPLICATION . str_replace('./', '/', $moduleDir);    
+    
+    // se nao existe diretorio 
+    if(!is_dir($modulePath)){
+        continue;
+    }
+    
+    $applicationsPaths = new DirectoryIterator($modulePath);
+    
+    foreach ($applicationsPaths as $dir) {
+
+        if ($dir->isDot() or !$dir->isDir() or strstr($dir->getFileName(), '.ignore') ) {
+            continue;
+        }
+
+        $filename  = $dir->getFileName();
+        $modules[] = $filename;
+    }    
+    
+}
+
 return array(
-    // This should be an array of module namespaces used in the application.
-    'modules' => array(
-        'Application',
+    'autoloader' => array(
+        'namespaces' => $addVendor,
+        'autoregister_zf'  => true,
     ),
-
-    // These are various options for the listeners attached to the ModuleManager
+    'modules' => $modules,
     'module_listener_options' => array(
-        // This should be an array of paths in which modules reside.
-        // If a string key is provided, the listener will consider that a module
-        // namespace, the value of that key the specific path to that module's
-        // Module class.
-        'module_paths' => array(
-            './module',
-            './vendor',
-        ),
-
-        // An array of paths from which to glob configuration files after
-        // modules are loaded. These effectively override configuration
-        // provided by modules themselves. Paths may use GLOB_BRACE notation.
+        'module_paths' => $addModulePaths,
         'config_glob_paths' => array(
-            'config/autoload/{{,*.}global,{,*.}local}.php',
+            'config/autoload/{,*.}{global,local}.php',
         ),
 
         // Whether or not to enable a configuration cache.
@@ -62,7 +112,7 @@ return array(
     //         'interface'       => $stringOptionalInterface,
     //         'method'          => $stringRequiredMethodName,
     //     ),
-    // ),
+    // )
 
    // Initial configuration with which to seed the ServiceManager.
    // Should be compatible with Zend\ServiceManager\Config.
